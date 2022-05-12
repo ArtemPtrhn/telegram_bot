@@ -8,6 +8,9 @@ from connect_to_database import stickers, replies, insert_sticker, insert_user, 
 WAIT_NAME, WAIT_SEX, WAIT_GRADE = range(3)
 
 
+bd = load_workbook('database.xlsx')
+
+
 def main():
     updater = Updater(
         token=TOKEN,
@@ -33,14 +36,14 @@ def main():
         fallbacks=[],  # Общие точки выхода или отмены
     )
 
-    dispatcher.add_handler(murad_handler)
     dispatcher.add_handler(conv_handler)
-    dispatcher.add_handler(text_handler)
-    dispatcher.add_handler(da_handler)
-    dispatcher.add_handler(hello_handler)
-    dispatcher.add_handler(keyboard_handler)
     dispatcher.add_handler(echo_handler)
+    dispatcher.add_handler(hello_handler)
+    dispatcher.add_handler(text_handler)
+    dispatcher.add_handler(keyboard_handler)
     dispatcher.add_handler(sticker_handler)
+    dispatcher.add_handler(murad_handler)
+    dispatcher.add_handler(da_handler)
 
     updater.start_polling()
     print('Всё чики-пуки!')
@@ -146,7 +149,11 @@ def meet(update: Update, context: CallbackContext):
     '''
     user_id = update.message.from_user.id
     if in_database(user_id):
-        pass  # выход из диалога
+        update.message.reply_text(
+            f'Добро пожаловать, {update.message.from_user.first_name}\n',
+            reply_markup=ReplyKeyboardRemove()
+        )
+        return ConversationHandler.END
     return ask_name(update, context)
 
 
